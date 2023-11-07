@@ -36,11 +36,10 @@ describe("Testing musicians endpoints", () => {
 
     test("Testing POST /musicians endpoint", async () => {
         const length = (await Musician.findAll()).length;
-        await Musician.create({
-            name: "Bonny",
-            instrument: "Drums",
-        });
-        const musicians = await Musician.findAll();
+        const response = await request(app)
+            .post("/musicians")
+            .send({ name: "Bonny", instrument: "Triangle" });
+        const musicians = JSON.parse(response.text);
         expect(musicians.length).toEqual(length + 1);
         expect(musicians).toEqual(
             expect.arrayContaining([expect.objectContaining({ name: "Bonny" })])
@@ -48,31 +47,27 @@ describe("Testing musicians endpoints", () => {
     });
 
     test("Testing PUT /musicians/:id endpoint", async () => {
-        //const response = await request(app).put("/musicians/6");
-        const id = 4;
-        const foundMusician = await Musician.findByPk(id);
-        foundMusician.update({
-            name: "Bill",
-            instrument: "Guitar",
-        });
+        await request(app)
+            .put("/musicians/4")
+            .send({ name: "Bill", instrument: "Saxophone" });
         const musicians = await Musician.findAll();
         expect(musicians).toEqual(
             expect.arrayContaining([
-                expect.objectContaining({ name: "Bill", instrument: "Guitar" }),
+                expect.objectContaining({
+                    name: "Bill",
+                    instrument: "Saxophone",
+                }),
             ])
         );
         const found = await Musician.findOne({ where: { name: "Bill" } });
-        expect(found.id).toBe(id);
+        expect(found.id).toBe(4);
     });
 
     test("Testing DELETE /musicians/:id endpoint", async () => {
-        const id = 4;
-        const foundMusician = await Musician.findByPk(id);
-        const allMusicians = await Musician.findAll();
-        const length = allMusicians.length;
-        foundMusician.destroy();
-        const musicians = await Musician.findAll();
-        expect(musicians.length).toBe(length - 1);
+        const length = (await Musician.findAll()).length;
+        await request(app).delete("/musicians/1");
+        const musiciansAfterDeleting = await Musician.findAll();
+        expect(musiciansAfterDeleting.length).toBe(length - 1);
     });
 });
 

@@ -30,7 +30,7 @@ app.get("/bands", async (req, res) => {
 });
 
 app.get("/musicians/:id", async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
     const musician = await Musician.findByPk(id);
     res.json(musician);
 });
@@ -40,11 +40,12 @@ app.post("/musicians", async (req, res) => {
         name: req.body.name,
         instrument: req.body.instrument,
     });
-    res.json();
+    const musicians = await Musician.findAll();
+    res.json(musicians);
 });
 
 app.put("/musicians/:id", async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
     const foundMusician = await Musician.findByPk(id);
     await foundMusician.update({
         name: req.body.name,
@@ -54,7 +55,7 @@ app.put("/musicians/:id", async (req, res) => {
 });
 
 app.delete("/musicians/:id", async (req, res) => {
-    const id = req.params.id;
+    const { id } = req.params;
     const foundMusician = await Musician.findByPk(id);
     await foundMusician.destroy();
     res.json();
