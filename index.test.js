@@ -27,40 +27,40 @@ describe("Testing musicians endpoints", () => {
         );
     });
 
-    test("Testing musicians/1 endpoint", async () => {
-        const response = await request(app).get("/musicians/1");
-        expect(response.statusCode).toBe(200);
-        const data = JSON.parse(response.text);
-        expect(data).toEqual(
-            expect.objectContaining({
-                name: "Mick Jagger",
-                instrument: "Voice",
-            })
-        );
-    });
-    test("Testing musicians/2 endpoint", async () => {
-        const response = await request(app).get("/musicians/2");
-        expect(response.statusCode).toBe(200);
-        const data = JSON.parse(response.text);
-        expect(data).toEqual(
-            expect.objectContaining({
-                name: "Drake",
-                instrument: "Voice",
-            })
-        );
-    });
+    // test("Testing musicians/1 endpoint", async () => {
+    //     const response = await request(app).get("/musicians/1");
+    //     expect(response.statusCode).toBe(200);
+    //     const data = JSON.parse(response.text);
+    //     expect(data).toEqual(
+    //         expect.objectContaining({
+    //             name: "Mick Jagger",
+    //             instrument: "Voice",
+    //         })
+    //     );
+    // });
+    // test("Testing musicians/2 endpoint", async () => {
+    //     const response = await request(app).get("/musicians/2");
+    //     expect(response.statusCode).toBe(200);
+    //     const data = JSON.parse(response.text);
+    //     expect(data).toEqual(
+    //         expect.objectContaining({
+    //             name: "Drake",
+    //             instrument: "Voice",
+    //         })
+    //     );
+    // });
 
-    test("Testing musicians/3 endpoint", async () => {
-        const response = await request(app).get("/musicians/3");
-        expect(response.statusCode).toBe(200);
-        const data = JSON.parse(response.text);
-        expect(data).toEqual(
-            expect.objectContaining({
-                name: "Jimi Hendrix",
-                instrument: "Guitar",
-            })
-        );
-    });
+    // test("Testing musicians/3 endpoint", async () => {
+    //     const response = await request(app).get("/musicians/3");
+    //     expect(response.statusCode).toBe(200);
+    //     const data = JSON.parse(response.text);
+    //     expect(data).toEqual(
+    //         expect.objectContaining({
+    //             name: "Jimi Hendrix",
+    //             instrument: "Guitar",
+    //         })
+    //     );
+    // });
 });
 
 describe("Testing bands endpoints", () => {
@@ -86,6 +86,44 @@ describe("Testing bands endpoints", () => {
             expect.arrayContaining([
                 expect.objectContaining({ name: "Coldplay" }),
             ])
+        );
+    });
+});
+
+describe("Testing /musicians/:id endpoint", () => {
+    test("Testing /musicians/2 endpoint", async () => {
+        const response = await request(app).get("/musicians/2");
+        expect(response.statusCode).toBe(200);
+        const data = JSON.parse(response.text);
+        expect(data).toEqual(
+            expect.objectContaining({
+                name: "Drake",
+                instrument: "Voice",
+            })
+        );
+    });
+
+    test("Testing /musicians/1 endpoint", async () => {
+        const response = await request(app).get("/musicians/1");
+        expect(response.statusCode).toBe(200);
+        const data = JSON.parse(response.text);
+        expect(data).toEqual(
+            expect.objectContaining({
+                name: "Mick Jagger",
+                instrument: "Voice",
+            })
+        );
+    });
+
+    test("Testing /musicians/3 endpoint", async () => {
+        const response = await request(app).get("/musicians/3");
+        expect(response.statusCode).toBe(200);
+        const data = JSON.parse(response.text);
+        expect(data).toEqual(
+            expect.objectContaining({
+                name: "Jimi Hendrix",
+                instrument: "Guitar",
+            })
         );
     });
 });
