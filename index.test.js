@@ -1,6 +1,6 @@
 const request = require("supertest");
 const app = require("./src/app");
-const { Musician } = require("./models");
+const { Musician, Band } = require("./models");
 const { db } = require("./db/connection");
 const { syncSeed } = require("./seed");
 
@@ -144,7 +144,7 @@ describe("Testing /musicians/:id endpoint", () => {
     });
 });
 
-describe("Tests router fot /musicians", () => {
+describe("Tests router for /musicians", () => {
     beforeAll(async () => {
         await db.sync({ force: true });
         await syncSeed();
@@ -231,5 +231,27 @@ describe("Tests router fot /musicians", () => {
         ).toBe(true);
         const musiciansAfterDeleting = await Musician.findAll();
         expect(musiciansAfterDeleting.length).toBe(length - 1);
+    });
+});
+
+describe("Tests router for /bands", () => {
+    beforeAll(async () => {
+        await db.sync({ force: true });
+        await syncSeed();
+    });
+    test("tests GET /bands with musicians", async () => {
+        const band = await Band.findByPk(2);
+        const musician1 = await Musician.findByPk(1);
+        const musician2 = await Musician.findByPk(2);
+        band.addMusicians([musician1, musician2]);
+        const response = await request(app).get("/bands");
+        expect(response.statusCode).toBe(200);
+        expect(response.headers["content-type"]).toMatch("application/json");
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(
+            response.body.every(({ name, genre }) => !!name && !!genre)
+        ).toBe(true);
+        expect(response.body[1].name).toEqual("Black Pink");
+        expect(response.body[1].musicians.length).toEqual(2);
     });
 });
