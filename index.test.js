@@ -255,3 +255,54 @@ describe("Tests router for /bands", () => {
         expect(response.body[1].musicians.length).toEqual(2);
     });
 });
+
+describe("tests server validation", () => {
+    test(" tests name and instrument server validation on POST /musicians endpoint", async () => {
+        const response = await request(app)
+            .post(`/musicians`)
+            .send({ name: "Benny" });
+        expect(response.body).toHaveProperty("error");
+        expect(Array.isArray(response.body.error)).toBe(true);
+        expect(response.body.error).toContainEqual(
+            expect.objectContaining({
+                msg: "Invalid value",
+                path: "instrument",
+            })
+        );
+        const response1 = await request(app)
+            .post(`/musicians`)
+            .send({ instrument: "Violin" });
+        expect(response1.body).toHaveProperty("error");
+        expect(Array.isArray(response1.body.error)).toBe(true);
+        expect(response1.body.error).toContainEqual(
+            expect.objectContaining({
+                msg: "Invalid value",
+                path: "name",
+            })
+        );
+    });
+    test(" tests the length of name and instrument on POST /musicians endpoint", async () => {
+        const response = await request(app)
+            .post(`/musicians`)
+            .send({ name: "B", instrument: "Piano" });
+        expect(response.body).toHaveProperty("error");
+        expect(Array.isArray(response.body.error)).toBe(true);
+        expect(response.body.error).toContainEqual(
+            expect.objectContaining({
+                msg: "Invalid value",
+                path: "name",
+            })
+        );
+        const response1 = await request(app)
+            .post(`/musicians`)
+            .send({ name: "Bi", instrument: "P" });
+        expect(response1.body).toHaveProperty("error");
+        expect(Array.isArray(response1.body.error)).toBe(true);
+        expect(response1.body.error).toContainEqual(
+            expect.objectContaining({
+                msg: "Invalid value",
+                path: "instrument",
+            })
+        );
+    });
+});
