@@ -1,30 +1,11 @@
 const { Router } = require("express");
 const musicianRouter = Router();
-const { Musician } = require("./../models");
-const { check, validationResult } = require("express-validator");
+const controller = require("./../controllers/musicians");
+const { check } = require("express-validator");
 
-musicianRouter.get(
-    "/",
+musicianRouter.get("/", controller.allMusicians);
 
-    async (req, res, next) => {
-        try {
-            const musicians = await Musician.findAll();
-            res.json(musicians);
-        } catch (error) {
-            next(error);
-        }
-    }
-);
-
-musicianRouter.get("/:id", async (req, res, next) => {
-    try {
-        const { id } = req.params;
-        const musician = await Musician.findByPk(id);
-        res.json(musician);
-    } catch (error) {
-        next(error);
-    }
-});
+musicianRouter.get("/:id", controller.musiciianWithId);
 
 musicianRouter.post(
     "/",
@@ -34,58 +15,21 @@ musicianRouter.post(
         check("name").isLength({ max: 20, min: 2 }),
         check("instrument").isLength({ max: 20, min: 2 }),
     ],
-    async (req, res) => {
-        const errors = validationResult(req);
-        if (!errors.isEmpty()) {
-            res.json({ error: errors.array() });
-        } else {
-            try {
-                await Musician.create({
-                    name: req.body.name,
-                    instrument: req.body.instrument,
-                });
-                const musicians = await Musician.findAll();
-                res.json(musicians);
-            } catch (error) {
-                next(error);
-            }
-        }
-    }
+    controller.addMusician
 );
 
 musicianRouter.put(
     "/:id",
-    check("name").not().isEmpty().trim(),
-    check("instrument").not().isEmpty().trim(),
-    check("name").isLength({ max: 20, min: 2 }),
-    check("instrument").isLength({ max: 20, min: 2 }),
-    async (req, res, next) => {
-        try {
-            const { id } = req.params;
-            const foundMusician = await Musician.findByPk(id);
-            await foundMusician.update({
-                name: req.body.name,
-                instrument: req.body.instrument,
-            });
-            const musicians = await Musician.findAll();
-            res.json(musicians);
-        } catch (error) {
-            next(error);
-        }
-    }
+    [
+        check("name").not().isEmpty().trim(),
+        check("instrument").not().isEmpty().trim(),
+        check("name").isLength({ max: 20, min: 2 }),
+        check("instrument").isLength({ max: 20, min: 2 }),
+    ],
+    controller.updateMusician
 );
 
-musicianRouter.delete("/:id", async (req, res) => {
-    try {
-        const { id } = req.params;
-        const foundMusician = await Musician.findByPk(id);
-        await foundMusician.destroy();
-        const musicians = await Musician.findAll();
-        res.json(musicians);
-    } catch (error) {
-        next(error);
-    }
-});
+musicianRouter.delete("/:id", controller.deleteMusician);
 
 musicianRouter.use((err, req, res, next) => {
     console.error(err.stack);
