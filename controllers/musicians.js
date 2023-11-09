@@ -10,7 +10,7 @@ module.exports = {
             next(error);
         }
     },
-    musiciianWithId: async (req, res, next) => {
+    musicianWithId: async (req, res, next) => {
         try {
             const { id } = req.params;
             const musician = await Musician.findByPk(id);
